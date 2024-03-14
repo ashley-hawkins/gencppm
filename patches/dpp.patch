@@ -1,0 +1,181 @@
+diff --git a/include/dpp/colors.h b/include/dpp/colors.h
+index 7a2c90b9..ba2a7864 100644
+--- a/include/dpp/colors.h
++++ b/include/dpp/colors.h
+@@ -31,7 +31,7 @@ namespace dpp {
+  * @brief predefined color constants.
+  */
+ namespace colors {
+-	const uint32_t
++	inline const uint32_t
+ 		white = 0xFFFFFF,
+ 		discord_white = 0xFFFFFE,
+ 		light_gray = 0xC0C0C0,
+diff --git a/include/dpp/dispatcher.h b/include/dpp/dispatcher.h
+index fef838fb..b7a80c91 100644
+--- a/include/dpp/dispatcher.h
++++ b/include/dpp/dispatcher.h
+@@ -49,6 +49,7 @@
+ #include <exception>
+ #include <algorithm>
+ #include <string>
++#include <vector>
+ 
+ #ifdef DPP_CORO
+ #include <dpp/coro.h>
+@@ -2013,7 +2014,7 @@ struct DPP_EXPORT voice_receive_t : public event_dispatch_t {
+ 	/**
+ 	 * @brief Audio data, encoded as 48kHz stereo PCM or Opus,
+ 	 */
+-	std::basic_string<uint8_t> audio_data = {};
++	std::vector<uint8_t> audio_data = {};
+ 
+ 	/**
+ 	 * @brief User ID of speaker (zero if unknown)
+diff --git a/include/dpp/httpsclient.h b/include/dpp/httpsclient.h
+index f043d533..6e40594d 100644
+--- a/include/dpp/httpsclient.h
++++ b/include/dpp/httpsclient.h
+@@ -32,12 +32,12 @@
+ 
+ namespace dpp {
+ 
+-static inline const std::string http_version = "DiscordBot (https://github.com/brainboxdotcc/DPP, "
++inline const std::string http_version = "DiscordBot (https://github.com/brainboxdotcc/DPP, "
+                                                 + to_hex(DPP_VERSION_MAJOR, false) + "."
+                                                 + to_hex(DPP_VERSION_MINOR, false) + "."
+                                                 + to_hex(DPP_VERSION_PATCH, false) + ")";
+ 
+-static inline constexpr const char* DISCORD_HOST = "https://discord.com";
++inline constexpr const char* DISCORD_HOST = "https://discord.com";
+ 
+ /**
+  * @brief HTTP connection status
+diff --git a/include/dpp/message.h b/include/dpp/message.h
+index f2b1d1b7..9037ff35 100644
+--- a/include/dpp/message.h
++++ b/include/dpp/message.h
+@@ -1456,37 +1456,37 @@ namespace embed_type {
+ 	/**
+ 	 * @brief Rich text
+ 	 */
+-	const std::string emt_rich = "rich";
++	inline const std::string emt_rich = "rich";
+ 
+ 	/**
+ 	 * @brief Image
+ 	 */
+-	const std::string emt_image = "image";
++	inline const std::string emt_image = "image";
+ 
+ 	/**
+ 	 * @brief Video link
+ 	 */
+-	const std::string emt_video = "video";
++	inline const std::string emt_video = "video";
+ 
+ 	/**
+ 	 * @brief Animated gif
+ 	 */
+-	const std::string emt_gifv = "gifv";
++	inline const std::string emt_gifv = "gifv";
+ 
+ 	/**
+ 	 * @brief Article
+ 	 */
+-	const std::string emt_article = "article";
++	inline const std::string emt_article = "article";
+ 
+ 	/**
+ 	 * @brief Link URL
+ 	 */
+-	const std::string emt_link = "link";
++	inline const std::string emt_link = "link";
+ 
+ 	/**
+ 	 * @brief Auto moderation filter
+ 	 */
+-	const std::string emt_automod = "auto_moderation_message";
++	inline const std::string emt_automod = "auto_moderation_message";
+ } // namespace embed_type
+ 
+ /**
+diff --git a/src/dpp/discordvoiceclient.cpp b/src/dpp/discordvoiceclient.cpp
+index 5e514d73..a93d3a58 100644
+--- a/src/dpp/discordvoiceclient.cpp
++++ b/src/dpp/discordvoiceclient.cpp
+@@ -35,6 +35,7 @@
+ 	#include <netinet/tcp.h>
+ #endif
+ #include <string_view>
++#include <span>
+ #include <iostream>
+ #include <fstream>
+ #include <algorithm>
+@@ -259,11 +260,11 @@ void discord_voice_client::voice_courier_loop(discord_voice_client& client, cour
+ 					}
+ 				} else {
+ 					voice_receive_t& vr = *d.parked_payloads.top().vr;
+-					if (vr.audio_data.length() > 0x7FFFFFFF) {
++					if (vr.audio_data.size() > 0x7FFFFFFF) {
+ 						throw dpp::length_exception(err_massive_audio, "audio_data > 2GB! This should never happen!");
+ 					}
+ 					if (samples = opus_decode(d.decoder.get(), vr.audio_data.data(),
+-						static_cast<opus_int32>(vr.audio_data.length() & 0x7FFFFFFF), pcm, 5760, 0);
++						static_cast<opus_int32>(vr.audio_data.size() & 0x7FFFFFFF), pcm, 5760, 0);
+ 					    samples >= 0) {
+ 						vr.reassign(&client, d.user_id, reinterpret_cast<uint8_t*>(pcm),
+ 							samples * opus_channel_count * sizeof(opus_int16));
+@@ -710,7 +711,7 @@ void discord_voice_client::read_ready()
+ 	int r = this->udp_recv((char*)buffer, sizeof(buffer));
+ 
+ 	if (r > 0 && (!creator->on_voice_receive.empty() || !creator->on_voice_receive_combined.empty())) {
+-		const std::basic_string_view<uint8_t> packet{buffer, static_cast<size_t>(r)};
++		const std::span<uint8_t> packet{buffer, static_cast<size_t>(r)};
+ 		constexpr size_t header_size = 12;
+ 		if (static_cast<size_t>(r) < header_size) {
+ 			/* Invalid RTP payload */
+@@ -770,7 +771,7 @@ void discord_voice_client::read_ready()
+ 			return;
+ 		}
+ 
+-		std::basic_string_view<uint8_t> decrypted_data{encrypted_data, encrypted_data_len - crypto_box_MACBYTES};
++		std::span<uint8_t> decrypted_data{encrypted_data, encrypted_data_len - crypto_box_MACBYTES};
+ 		if (const bool uses_extension [[maybe_unused]] = (packet[0] >> 4) & 0b0001) {
+ 			/* Skip the RTP Extensions */
+ 			size_t ext_len = 0;
+@@ -781,14 +782,14 @@ void discord_voice_client::read_ready()
+ 				ext_len = sizeof(uint32_t) * ext_len_in_words;
+ 			}
+ 			constexpr size_t ext_header_len = sizeof(uint16_t) * 2;
+-			decrypted_data = decrypted_data.substr(ext_header_len + ext_len);
++			decrypted_data = decrypted_data.subspan(ext_header_len + ext_len);
+ 		}
+ 
+ 		/*
+ 		 * We're left with the decrypted, opus-encoded data.
+ 		 * Park the payload and decode on the voice courier thread.
+ 		 */
+-		vp.vr->audio_data.assign(decrypted_data);
++		vp.vr->audio_data.assign(decrypted_data.begin(), decrypted_data.end());
+ 
+ 		{
+ 			std::lock_guard lk(voice_courier_shared_state.mtx);
+diff --git a/src/dpp/dispatcher.cpp b/src/dpp/dispatcher.cpp
+index 1d700efd..6ac9775d 100644
+--- a/src/dpp/dispatcher.cpp
++++ b/src/dpp/dispatcher.cpp
+@@ -279,11 +279,11 @@ void voice_receive_t::reassign(discord_voice_client* vc, snowflake _user_id, con
+ 	voice_client = vc;
+ 	user_id = _user_id;
+ 
+-	audio_data.assign(pcm, length);
++	audio_data.assign(pcm, pcm + length);
+ 
+ 	// for backwards compatibility; remove soon
+ 	audio = audio_data.data();
+-	audio_size = audio_data.length();
++	audio_size = audio_data.size();
+ }
+ 
+ } // namespace dpp

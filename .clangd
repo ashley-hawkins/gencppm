@@ -1,0 +1,11 @@
+CompileFlags:
+  CompilationDatabase: build
+  Add: -ferror-limit=0
+Diagnostics:
+  # Fun errors that clangd generates even when the code is correct.
+  Suppress:
+    - module_odr_violation_record
+    - module_odr_violation_template_parameter
+    - module_odr_violation_mismatch_decl_unknown
+    - fatal_too_many_errors
+    - pch_different_branch

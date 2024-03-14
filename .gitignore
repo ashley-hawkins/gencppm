@@ -1,0 +1,50 @@
+# This is a .gitignore file for CMake projects
+
+# Ignore build output directories
+/build*/
+/bin/
+/lib/
+/.cache/
+
+# Ignore CMake generated files
+CMakeCache.txt
+CMakeFiles/
+CMakeScripts/
+*.cmake
+Makefile
+
+# Don't ignore our own *.cmake files
+!/cmake/*.cmake
+
+# Ignore compiled object files
+*.o
+*.so
+*.ko
+*.elf
+
+# Ignore IDE/project files
+.idea/
+*.project
+*.cproject
+*.settings/
+
+# Ignore Visual Studio Code settings
+.vscode/
+
+# Ignore Visual Studio settings
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.sln.ide/
+
+# Ignore build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+bld/
+[Bb]in/
+[Oo]bj/
