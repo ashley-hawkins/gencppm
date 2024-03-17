@@ -57,7 +57,7 @@ public:
 	{
 		auto& pp = CI.getPreprocessor();
 		filePathToIncludeNameMap.clear();
-		pp.addPPCallbacks(std::make_unique<MyPPCallbacks>(configuration, filePathToIncludeNameMap));
+		pp.addPPCallbacks(std::make_unique<MyPPCallbacks>(configuration, filePathToIncludeNameMap, pp.getSourceManager()));
 		return true;
 	}
 

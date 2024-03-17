@@ -46,8 +46,8 @@ export namespace gencppm
 class MyPPCallbacks : public PPCallbacks
 {
 public:
-	MyPPCallbacks(Configuration const& configuration, FilePathToIncludeNameMap& filePathToIncludeNameMap)
-	  : configuration{configuration}, filePathToIncludeNameMap{filePathToIncludeNameMap}
+	MyPPCallbacks(Configuration const& configuration, FilePathToIncludeNameMap& filePathToIncludeNameMap, SourceManager& sourceManager)
+	  : configuration{configuration}, filePathToIncludeNameMap{filePathToIncludeNameMap}, sourceManager{sourceManager}
 	{
 	}
 
@@ -60,19 +60,47 @@ public:
 			return;
 		}
 
-		auto filePath = std::filesystem::path{std::string{File->getName()}}.lexically_normal();
-		if (configuration.HeaderWhitelist.empty() || std::ranges::any_of(configuration.HeaderWhitelist, [&FileName](auto const& header) {
-			    return FileName.starts_with(header);
+		auto filePath{std::filesystem::path{std::string{File->getName()}}.lexically_normal()};
+
+		FileEntryRef includedFromFile{*sourceManager.getFileEntryRefForID(sourceManager.getFileID(HashLoc))};
+		StringRef includedFromPath{includedFromFile.getName()};
+		auto includedFromDir{std::filesystem::path{std::string{includedFromFile.getDir().getName()}}.lexically_normal()};
+		auto searchDir{std::filesystem::path{std::string{SearchPath}}.lexically_normal()};
+
+		std::string NormalisedFileName = FileName.str();
+
+		if (!IsAngled && searchDir == includedFromDir)
+		{
+			llvm::errs() << "Looks like a local include: " << FileName << " => " << filePath << '\n';
+			auto mappedPair = filePathToIncludeNameMap.find(std::string{includedFromPath});
+			if (mappedPair != filePathToIncludeNameMap.end())
+			{
+				std::string_view includedFromName = mappedPair->second;
+				std::size_t idx{includedFromName.rfind("/")};
+				std::string_view dirName = includedFromName.substr(0, std::min(idx + 1, includedFromName.size()));
+				NormalisedFileName = std::filesystem::path{std::string{dirName} + RelativePath.str()}.lexically_normal().string();
+				llvm::errs() << "Wants local include: \"" << FileName << "\" => <" << NormalisedFileName << "> => " << filePath << '\n';
+			}
+		}
+
+		if (configuration.HeaderWhitelist.empty() || std::ranges::any_of(configuration.HeaderWhitelist, [&NormalisedFileName](auto const& header) {
+			    return NormalisedFileName.starts_with(header);
 		    }))
 		{
-			// llvm::errs() << "InclusionDirective: " << FileName << " => " << filePath << '\n';
-			filePathToIncludeNameMap[filePath] = FileName;
+			llvm::errs() << "InclusionDirective: " << (IsAngled ? "<" : "\"") << FileName << (IsAngled ? ">" : "\"");
+			if (!IsAngled)
+			{
+				llvm::errs() << " => <" << NormalisedFileName << ">";
+			}
+			llvm::errs() << " => " << filePath << '\n';
+			filePathToIncludeNameMap[filePath] = NormalisedFileName;
 		}
 	}
 
 private:
 	Configuration const& configuration;
 	FilePathToIncludeNameMap& filePathToIncludeNameMap;
+	SourceManager& sourceManager;
 };
 
 class MyASTConsumer : public ASTConsumer
