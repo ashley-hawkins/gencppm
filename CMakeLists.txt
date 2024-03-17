@@ -19,7 +19,7 @@ include_directories(${LLVM_INCLUDE_DIRS} ${CLANG_INCLUDE_DIRS})
 message(STATUS "Fetching GSL")
 FetchContent_Declare(GSL
     GIT_REPOSITORY "https://github.com/microsoft/GSL"
-    GIT_TAG "v4.0.0"
+    GIT_TAG b39e7e4b0987859f5b19ff7686b149c916588658
     GIT_SHALLOW ON
     GIT_PROGRESS ON
 )
