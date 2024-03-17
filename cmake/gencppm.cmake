@@ -1,7 +1,6 @@
 set(GENCPPM_DIR ${CMAKE_CURRENT_LIST_DIR})
 
-# Function to create a shim target
-# function(create_module_shim target_name module_name)
+# Function to initialize a module shim target
 function(init_module_shim target_name module_name)
     set(oneValueArgs MODULE_INCLUDE_NAME WHITELIST_HEADERS)
     set(multiValueArgs HEADERS WHITELIST_NAMESPACES)
@@ -10,20 +9,6 @@ function(init_module_shim target_name module_name)
     if (NOT DEFINED ARG_MODULE_INCLUDE_NAME)
         set(ARG_MODULE_INCLUDE_NAME "${module_name}.hpp")
     endif()
-
-#     # Store properties for later use
-#     set_target_properties(${target_name} PROPERTIES MODULE_NAME "${module_name}")
-#     set_target_properties(${target_name} PROPERTIES MODULE_INCLUDE_NAME "${ARG_MODULE_INCLUDE_NAME}")
-#     set_target_properties(${target_name} PROPERTIES WHITELIST_HEADERS "${ARG_WHITELIST_HEADERS}")
-#     set_target_properties(${target_name} PROPERTIES MODULE_HEADERS "${ARG_HEADERS}")
-# endfunction()
-
-# # Function to initialize the module shim
-# function(init_module_shim target_name)
-    # get_target_property(module_name ${target_name} MODULE_NAME)
-    # get_target_property(MODULE_INCLUDE_NAME ${target_name} MODULE_INCLUDE_NAME)
-    # get_target_property(whitelist_headers ${target_name} WHITELIST_HEADERS)
-    # get_target_property(module_headers ${target_name} MODULE_HEADERS)
 
     # Create a directory for generated files if not exists
     set(generated_dir "${CMAKE_BINARY_DIR}/_shim_generated/${module_name}")
@@ -37,8 +22,6 @@ function(init_module_shim target_name module_name)
     endforeach()
 
     set(output_cppm_file "${generated_dir}/${module_name}.cppm")
-
-    file(WRITE ${output_cppm_file} "#include \"${ARG_MODULE_INCLUDE_NAME}\"\n")
 
     # Extract the compile flags from the target, prepend with '--extra-arg=' and pass to gencppm
     get_target_property(target_compile_options ${target_name} INTERFACE_COMPILE_OPTIONS)
@@ -85,8 +68,7 @@ function(init_module_shim target_name module_name)
         list(APPEND whitelist_namespaces "-w=${namespace}")
     endforeach()
 
-    set(full_command_line $<TARGET_FILE:gencppm> -p ${CMAKE_BINARY_DIR} -M ${module_name} -I ${ARG_MODULE_INCLUDE_NAME} ${header_args} ${whitelist_namespaces} ${extra_args} ${output_cppm_file})
-    message(STATUS "Full command line: ${full_command_line}")
+    set(full_command_line $<TARGET_FILE:gencppm> -p ${CMAKE_BINARY_DIR} -M=${module_name} -I=${ARG_MODULE_INCLUDE_NAME} ${header_args} ${whitelist_namespaces} ${extra_args} ${output_cppm_file})
     string(REPLACE ";" "\\;" escaped_full_command_line "${full_command_line}")
 
     # Update the custom command to include the extra arguments
