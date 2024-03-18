@@ -38,9 +38,10 @@ add_subdirectory(module_shims)
 
 add_library(${CMAKE_PROJECT_NAME}-module)
 target_sources(${CMAKE_PROJECT_NAME}-module PUBLIC FILE_SET CXX_MODULES FILES ${MODULE_SOURCES})
+target_link_libraries(${CMAKE_PROJECT_NAME}-module PUBLIC clang::ast clang::tooling clang::basic clang::frontend clang::lex llvm::support Microsoft.GSL::GSL)
 llvm_update_compile_flags(${CMAKE_PROJECT_NAME}-module)
 
-target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE ${CMAKE_PROJECT_NAME}-module PUBLIC clangTooling Microsoft.GSL::GSL)
+target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE ${CMAKE_PROJECT_NAME}-module)
 llvm_update_compile_flags(${CMAKE_PROJECT_NAME})
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")

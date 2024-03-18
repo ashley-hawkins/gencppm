@@ -1,16 +1,19 @@
 module;
-#include "clang/AST/ASTContext.h"
-#include "clang/AST/Decl.h"
-#include "clang/AST/DeclCXX.h"
-#include "clang/Frontend/CompilerInstance.h"
-#include "clang/Lex/HeaderSearchOptions.h"
-#include "clang/Tooling/CommonOptionsParser.h"
-#include "clang/Tooling/Tooling.h"
-#include <vector>
+#include <cstddef>
+#include <cstdint>
+#include <compare>
+
+#include <memory>
 export module gencppm;
 import :namespaces;
 import :ast_visitor;
 import :ast_consumer;
+
+import LLVM.Support;
+
+import clang.Basic;
+import clang.Tooling;
+import clang.Frontend;
 
 export namespace gencppm
 {

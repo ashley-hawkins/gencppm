@@ -1,14 +1,20 @@
 module;
-#include "clang/AST/ASTContext.h"
-#include "clang/AST/Decl.h"
-#include "clang/AST/DeclCXX.h"
-#include "clang/AST/RecursiveASTVisitor.h"
-#include "clang/Frontend/CompilerInstance.h"
+#include <cstddef>
+#include <cstdint>
+#include <compare>
 
 #include <filesystem>
+#include <algorithm>
+#include <vector>
 export module gencppm:ast_visitor;
 import :namespaces;
 import :any_of;
+
+import LLVM.Support;
+
+import clang.Basic;
+import clang.AST;
+import clang.Frontend;
 
 using namespace clang;
 
@@ -36,7 +42,7 @@ public:
 	{
 		auto declName = Declaration->getDeclName().getAsString();
 		auto namespaceName = getNamespaceName(Declaration);
-		
+
 		// if (declName == "vector")
 		// {
 		// 	llvm::errs() << "Name: " << declName << '\n';
@@ -44,7 +50,7 @@ public:
 		// 	llvm::errs() << "Decl: " << Declaration->getDeclKindName() << '\n';
 		// 	llvm::errs() << "In Namespace: " << namespaceName << '\n';
 		// }
-		
+
 		if (declName == "json" || declName == "basic_json")
 		{
 			// llvm::errs() << "Name: " << declName << '\n';
@@ -233,7 +239,7 @@ private:
 		// 	llvm::errs() << "Decl: " << Declaration->getDeclKindName() << '\n';
 		// 	llvm::errs() << "In Namespace: " << namespaceName << '\n';
 		// }
-		
+
 		if (!validateDeclaration(Declaration))
 		{
 			return true;

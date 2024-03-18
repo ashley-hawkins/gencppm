@@ -138,3 +138,5 @@ init_module_shim(
     # namespaces to allow exporting symbols from
     WHITELIST_NAMESPACES std
 )
+
+add_subdirectory(llvm_generated)

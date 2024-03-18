@@ -1,14 +1,22 @@
 module;
-#include "clang/AST/ASTConsumer.h"
-#include "clang/AST/ASTContext.h"
-#include "clang/AST/Decl.h"
-#include "clang/Lex/Preprocessor.h"
+#include <cstddef>
+#include <cstdint>
+#include <compare>
 
+#include <algorithm>
 #include <filesystem>
 #include <string>
 export module gencppm:ast_consumer;
 import :namespaces;
 import :ast_visitor;
+
+import LLVM.Support;
+
+import clang.AST;
+import clang.Basic;
+import clang.Frontend;
+import clang.Tooling;
+import clang.Lex;
 
 using namespace clang;
 

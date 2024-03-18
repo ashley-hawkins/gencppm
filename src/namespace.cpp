@@ -1,6 +1,10 @@
 module;
-#include <algorithm>
+#include <cstddef>
+#include <cstdint>
+#include <compare>
+
 #include <filesystem>
+#include <algorithm>
 #include <ranges>
 #include <string>
 #include <unordered_map>
