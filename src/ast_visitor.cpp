@@ -142,8 +142,34 @@ private:
 		return namespaceInfo;
 	}
 
+	static bool isUnreservedName(std::string_view name, bool inGlobalNamespace)
+	{
+		if (name.empty())
+		{
+			return false;
+		}
+
+		if (inGlobalNamespace && name.front() == '_')
+		{
+			return false;
+		}
+
+		if (!inGlobalNamespace && name.length() > 1 && name.front() == '_' && std::isupper(name[1]))
+		{
+			return false;
+		}
+
+		if (name.contains("__"))
+		{
+			return false;
+		}
+
+		return true;
+	}
+
 	bool validateDeclaration(NamedDecl* Declaration)
 	{
+		constexpr bool allowReservedNames = true;
 		if (!isany<UsingDecl, TypeAliasDecl, TypedefDecl, NamespaceAliasDecl>(Declaration) && !Declaration->isExternallyVisible())
 		{
 			// TODO: Handle variables that are not externally visible but would've been accessible if this were a header file
@@ -161,11 +187,6 @@ private:
 
 		auto declNameStr = declName.getAsString();
 		if (declNameStr.empty())
-		{
-			return false;
-		}
-
-		if (declNameStr.contains("__") || declNameStr.size() > 1 && declNameStr[0] == '_' && std::isupper(declNameStr[1]))
 		{
 			return false;
 		}
@@ -195,34 +216,42 @@ private:
 		auto namespaceName = getNamespaceName(Declaration);
 
 		{
-			if (namespaceName.contains("__"))
+			if (!allowReservedNames)
 			{
-				return false;
+				std::vector<NamespaceInfo> namespaceInfo = getNamespaceAncestryInfo(Declaration);
+				if (!namespaceInfo.empty() && !isUnreservedName(namespaceInfo.back().name, true))
+				{
+					return false;
+				}
+				for (auto const& ns : namespaceInfo | std::views::reverse | std::views::drop(1))
+				{
+					if (!isUnreservedName(ns.name, false))
+					{
+						return false;
+					}
+				}
 			}
-
-			auto namespace_matches = [&namespaceName](std::string_view name) {
-				return namespaceName == name || namespaceName.starts_with(std::string{name} + "::");
+			// Predicate to check if namespaceName is the given namespace or a sub-namespace
+			auto namespace_matches = [&namespaceName](std::string_view prefix) {
+				return namespaceName == prefix || namespaceName.starts_with(std::string{prefix} + "::");
 			};
 
+			// If the whitelist is not empty, and the namespace is not in the whitelist, this is not valid
 			if (!configuration.NamespaceWhitelist.empty() && std::find_if(configuration.NamespaceWhitelist.begin(), configuration.NamespaceWhitelist.end(), namespace_matches) == configuration.NamespaceWhitelist.end())
 			{
 				return false;
 			}
 
-			if (std::find_if(configuration.NamespaceBlacklist.begin(), configuration.NamespaceBlacklist.end(), [&namespaceName](std::string const& prefix) {
-				    return namespaceName == prefix || namespaceName.starts_with(prefix + "::");
-			    }) != configuration.NamespaceBlacklist.end())
+			// If the blacklist is not empty, and the namespace is in the blacklist, this is not valid
+			if (std::find_if(configuration.NamespaceBlacklist.begin(), configuration.NamespaceBlacklist.end(), namespace_matches) != configuration.NamespaceBlacklist.end())
 			{
 				return false;
 			}
 		}
 
-		if (context->isTranslationUnit())
+		if (!allowReservedNames && !isUnreservedName(declNameStr, context->isTranslationUnit()))
 		{
-			if ((declNameStr.length() > 1 && declNameStr[0] == '_' && std::isupper(declNameStr[1])) || declNameStr.contains("__"))
-			{
-				return false;
-			}
+			return false;
 		}
 
 		return true;
