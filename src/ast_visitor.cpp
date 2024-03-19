@@ -119,7 +119,7 @@ private:
 
 	std::string getNamespaceName(NamedDecl* Declaration)
 	{
-		auto context = Declaration->getLexicalDeclContext();
+		auto context = Declaration->getDeclContext();
 		if (context->isNamespace())
 		{
 			return dyn_cast<NamespaceDecl>(context)->getQualifiedNameAsString();
@@ -131,7 +131,7 @@ private:
 	{
 		std::vector<NamespaceInfo> namespaceInfo;
 
-		auto context = Declaration->getLexicalDeclContext();
+		auto context = Declaration->getDeclContext();
 		NamespaceDecl* namespaceDecl;
 		while ((namespaceDecl = dyn_cast<NamespaceDecl>(context)))
 		{
