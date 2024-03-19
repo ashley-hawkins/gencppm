@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: (C) 2024 Ashley Hawkins <awhawkins@proton.me>
+# SPDX-License-Identifier: LGPL-3.0-only
+
 include(${PROJECT_SOURCE_DIR}/cmake/gencppm.cmake)
 
 # Example usage

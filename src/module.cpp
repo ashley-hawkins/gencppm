@@ -1,3 +1,10 @@
+/*
+ * SPDX-FileCopyrightText: © 2024 Ashley Hawkins <awhawkins@proton.me>
+ * SPDX-FileContributor: Ashley Hawkins <awhawkins@proton.me>
+ *
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
+
 export module gencppm;
 import :namespaces;
 import :ast_visitor;

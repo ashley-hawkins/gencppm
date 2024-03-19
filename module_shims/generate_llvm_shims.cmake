@@ -1,3 +1,8 @@
+# SPDX-FileCopyrightText: © 2024 Ashley Hawkins <awhawkins@proton.me>
+# SPDX-FileContributor: Ashley Hawkins <awhawkins@proton.me>
+#
+# SPDX-License-Identifier: LGPL-3.0-only
+
 if (NOT DEFINED GENCPPM_PATH)
     message(FATAL_ERROR "GENCPPM_PATH is not defined")
 endif()

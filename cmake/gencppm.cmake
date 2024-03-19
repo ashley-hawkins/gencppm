@@ -1,3 +1,8 @@
+# SPDX-FileCopyrightText: © 2024 Ashley Hawkins <awhawkins@proton.me>
+# SPDX-FileContributor: Ashley Hawkins <awhawkins@proton.me>
+#
+# SPDX-License-Identifier: LGPL-3.0-only
+
 set(GENCPPM_DIR ${CMAKE_CURRENT_LIST_DIR})
 
 # Function to initialize a module shim target

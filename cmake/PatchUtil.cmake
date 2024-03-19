@@ -1,3 +1,8 @@
+# SPDX-FileCopyrightText: © 2024 Ashley Hawkins <awhawkins@proton.me>
+# SPDX-FileContributor: Ashley Hawkins <awhawkins@proton.me>
+#
+# SPDX-License-Identifier: LGPL-3.0-only
+
 function(PatchUtil_Patch PATCH_ID PATCH_PATH DESTINATION_PATH PATCH_VERSION PATCH_RESULT)
     set(patch_variable_name "_${PATCH_ID}_patch_applied")
     set(_patch_applied ${${patch_variable_name}})

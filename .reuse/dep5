@@ -1,0 +1,8 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: gencppm
+Upstream-Contact: Ashley Hawkins <awhawkins@proton.me>
+Source: https://github.com/ashley-hawkins/gencppm
+
+Files: module_shims/*_generated/**
+Copyright: 2024 Ashley Hawkins <awhawkins@proton.me>
+License: CC0-1.0
