@@ -66,15 +66,21 @@ public:
 	DEFINE_VISITOR(Typedef)
 	DEFINE_VISITOR(Using)
 	DEFINE_VISITOR(TypeAlias)
-	DEFINE_VISITOR(Template)
 #undef DEFINE_VISITOR
 	bool VisitVarDecl(VarDecl* Declaration)
 	{
-		if (Declaration->isLocalVarDeclOrParm())
+		if (Declaration->isLocalVarDeclOrParm() || Declaration->isTemplateParameter())
 			return true;
 		return VisitDeclCommon(Declaration);
 
 		return true;
+	}
+
+	bool VisitTemplateDecl(TemplateDecl* Declaration)
+	{
+		if (isa<TemplateTemplateParmDecl>(Declaration))
+			return true;
+		return VisitDeclCommon(Declaration);
 	}
 
 	bool VisitNamespaceAliasDecl(NamespaceAliasDecl* Declaration)
