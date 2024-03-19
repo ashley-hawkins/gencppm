@@ -13,6 +13,8 @@ A tool to generate a cppm (C++20 Module) file that exports symbols declared in t
 
 # License information
 
+The project adheres to the [REUSE spceification](https://reuse.software/spec/) for license info.
+
 Full license text for all licenses used is available in LICENSES/
 
 All text files in the repository aside from licenses themselves should have copyright headers at the start of the file or an entry in .reuse/dep5 specifying the copyright information.
