@@ -1,14 +1,8 @@
-module;
-#include <cstddef>
-#include <cstdint>
-#include <compare>
-
-#include <algorithm>
-#include <filesystem>
-#include <string>
 export module gencppm:ast_consumer;
 import :namespaces;
 import :ast_visitor;
+
+import std;
 
 import LLVM.Support;
 

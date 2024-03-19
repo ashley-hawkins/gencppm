@@ -127,16 +127,17 @@ set(STD_HEADERS
     stop_token
     thread
 )
-add_library(std)
-init_module_shim(
-    # Target name
-    std
-    # Module name
-    std
-    # "Root" headers to include
-    HEADERS ${STD_HEADERS}
-    # namespaces to allow exporting symbols from
-    WHITELIST_NAMESPACES std
-)
+# add_library(std)
+# init_module_shim(
+#     # Target name
+#     std
+#     # Module name
+#     std
+#     # "Root" headers to include
+#     HEADERS ${STD_HEADERS}
+#     # namespaces to allow exporting symbols from
+#     WHITELIST_NAMESPACES std
+# )
 
 add_subdirectory(llvm_generated)
+add_subdirectory(std_generated)

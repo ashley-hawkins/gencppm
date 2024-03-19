@@ -1,6 +1,6 @@
-module;
-#include <type_traits>
 export module gencppm:any_of;
+
+import std;
 
 export namespace gencppm
 {

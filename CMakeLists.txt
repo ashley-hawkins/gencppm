@@ -36,9 +36,15 @@ set(MODULE_SOURCES
 add_executable(${CMAKE_PROJECT_NAME} ${SOURCE} src/main.cpp)
 add_subdirectory(module_shims)
 
+set(_std_modules)
+# std is implied on MSVC, for non-MSVC we need a workaround
+if (NOT MSVC)
+  list(APPEND _std_modules std)
+endif()
+
 add_library(${CMAKE_PROJECT_NAME}-module)
 target_sources(${CMAKE_PROJECT_NAME}-module PUBLIC FILE_SET CXX_MODULES FILES ${MODULE_SOURCES})
-target_link_libraries(${CMAKE_PROJECT_NAME}-module PUBLIC clang::ast clang::tooling clang::basic clang::frontend clang::lex llvm::support Microsoft.GSL::GSL)
+target_link_libraries(${CMAKE_PROJECT_NAME}-module PUBLIC ${_std_modules} clang::ast clang::tooling clang::basic clang::frontend clang::lex llvm::support Microsoft.GSL::GSL)
 llvm_update_compile_flags(${CMAKE_PROJECT_NAME}-module)
 
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE ${CMAKE_PROJECT_NAME}-module)

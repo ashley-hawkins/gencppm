@@ -1,16 +1,6 @@
-module;
-#include <cstddef>
-#include <cstdint>
-#include <compare>
-
-#include <filesystem>
-#include <algorithm>
-#include <ranges>
-#include <string>
-#include <unordered_map>
-#include <variant>
-#include <vector>
 export module gencppm:namespaces;
+
+import std;
 
 export namespace gencppm
 {

@@ -1,14 +1,8 @@
-module;
-#include <cstddef>
-#include <cstdint>
-#include <compare>
-
-#include <filesystem>
-#include <algorithm>
-#include <vector>
 export module gencppm:ast_visitor;
 import :namespaces;
 import :any_of;
+
+import std;
 
 import LLVM.Support;
 
