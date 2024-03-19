@@ -1,5 +1,5 @@
 module;
-#include "std.hpp"
+#include "gencppm_std.hpp"
 export module std;
 
 export {

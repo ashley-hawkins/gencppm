@@ -3,7 +3,7 @@
 #
 # SPDX-License-Identifier: LGPL-3.0-only
 
-set(GENCPPM_DIR ${CMAKE_CURRENT_LIST_DIR})
+set(GENCPPM_GENERATE_DIR ${CMAKE_CURRENT_LIST_DIR} CACHE INTERNAL "Path to gencppm directory" FORCE)
 
 # Function to initialize a module shim target
 function(init_module_shim target_name module_name)
@@ -79,7 +79,7 @@ function(init_module_shim target_name module_name)
     # Update the custom command to include the extra arguments
     add_custom_command(
         OUTPUT ${output_cppm_file}
-        COMMAND cmake -DFULL_COMMAND_LINE="${escaped_full_command_line}" -DOUT_FILE=${output_cppm_file} -DHEADER_FILE=${ARG_MODULE_INCLUDE_NAME} -P ${GENCPPM_DIR}/gencppm_generate.cmake
+        COMMAND cmake -DFULL_COMMAND_LINE="${escaped_full_command_line}" -DOUT_FILE=${output_cppm_file} -DHEADER_FILE=${ARG_MODULE_INCLUDE_NAME} -P ${GENCPPM_GENERATE_DIR}/gencppm_generate.cmake
         DEPENDS ${header_file} gencppm
         COMMENT "Regenerating module shim for ${module_name} with updated compile flags"
     )

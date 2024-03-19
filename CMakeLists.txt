@@ -38,36 +38,36 @@ set(MODULE_SOURCES
   src/any_of.cpp
 )
 
-add_executable(${CMAKE_PROJECT_NAME} ${SOURCE} src/main.cpp)
+add_executable(${PROJECT_NAME} ${SOURCE} src/main.cpp)
 add_subdirectory(module_shims)
 
 set(_std_modules)
 # std is implied on MSVC, for non-MSVC we need a workaround
 if (NOT MSVC)
-  list(APPEND _std_modules std)
+  list(APPEND _std_modules gencppm_std)
 endif()
 
-add_library(${CMAKE_PROJECT_NAME}-module)
-target_sources(${CMAKE_PROJECT_NAME}-module PUBLIC FILE_SET CXX_MODULES FILES ${MODULE_SOURCES})
-target_link_libraries(${CMAKE_PROJECT_NAME}-module PUBLIC ${_std_modules} clang::ast clang::tooling clang::basic clang::frontend clang::lex llvm::support Microsoft.GSL::GSL)
-llvm_update_compile_flags(${CMAKE_PROJECT_NAME}-module)
+add_library(${PROJECT_NAME}-module)
+target_sources(${PROJECT_NAME}-module PUBLIC FILE_SET CXX_MODULES FILES ${MODULE_SOURCES})
+target_link_libraries(${PROJECT_NAME}-module PUBLIC ${_std_modules} clang::ast clang::tooling clang::basic clang::frontend clang::lex llvm::support Microsoft.GSL::GSL)
+llvm_update_compile_flags(${PROJECT_NAME}-module)
 
-target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE ${CMAKE_PROJECT_NAME}-module)
-llvm_update_compile_flags(${CMAKE_PROJECT_NAME})
+target_link_libraries(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}-module)
+llvm_update_compile_flags(${PROJECT_NAME})
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-  target_compile_options(${CMAKE_PROJECT_NAME} PUBLIC -g)
-  target_link_options(${CMAKE_PROJECT_NAME} PUBLIC -g)
+  target_compile_options(${PROJECT_NAME} PUBLIC -g)
+  target_link_options(${PROJECT_NAME} PUBLIC -g)
 endif()
 
 if(ipo_supported)
   message(STATUS "IPO / LTO enabled")
-  set_property(TARGET ${CMAKE_PROJECT_NAME} PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+  set_property(TARGET ${PROJECT_NAME} PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
 else()
   message(STATUS "IPO / LTO not supported: <${error}>")
 endif()
 
-add_custom_target(${CMAKE_PROJECT_NAME}-windows
+add_custom_target(${PROJECT_NAME}-windows
   WORKING_DIRECTORY ../
   COMMAND ./build-windows.sh
   USES_TERMINAL

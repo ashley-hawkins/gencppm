@@ -131,7 +131,7 @@ set(generated_cmakelists_path ${generated_base_dir}/CMakeLists.txt)
 
 file(WRITE ${generated_cmakelists_path} "# Auto generated CMakeLists.txt\n")
 
-set(lib_name_under "std")
+set(lib_name_under "gencppm_std")
 set(generated_dir ${generated_base_dir}/${lib_name_under})
 set(generated_hpp_name ${lib_name_under}.hpp)
 set(generated_hpp_path ${generated_dir}/${generated_hpp_name})
@@ -144,7 +144,7 @@ foreach(header ${includes})
 endforeach()
 
 execute_process(
-    COMMAND ${GENCPPM_PATH} -M=${lib_name_under} -I=${generated_hpp_name} -w=std -w=__gnu_cxx ${generated_hpp_path} -extra-arg=-std=c++23
+    COMMAND ${GENCPPM_PATH} -M=std -I=${generated_hpp_name} -w=std -w=__gnu_cxx ${generated_hpp_path} -extra-arg=-std=c++23
     WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
     OUTPUT_VARIABLE GENCPPM_OUTPUT
     RESULT_VARIABLE GENCPPM_RESULT
