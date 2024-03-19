@@ -14,12 +14,10 @@ jobs:
     steps:
       - name: Check out source repository
         uses: actions/checkout@v3
-      - name: Set up Python environment
-        uses: https://github.com/actions/setup-python@v4
-        with:
-          python-version: "3.11"
+      - name: install python3
+        run: apt-get update && apt-get install -y python3 python3-pip
       - name: Install clang-format and reuse
-        run: python -m pip install clang-format==18.1.1 reuse
+        run: python3 -m pip install clang-format==18.1.1 reuse
       - name: Lint with clang-format
         id: clang-format
         continue-on-error: true
