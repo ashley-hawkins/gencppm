@@ -1,0 +1,36 @@
+# SPDX-FileCopyrightText: © 2024 Ashley Hawkins <awhawkins@proton.me>
+# SPDX-FileContributor: Ashley Hawkins <awhawkins@proton.me>
+#
+# SPDX-License-Identifier: CC0-1.0
+
+name: Lint code
+
+on: [push, pull_request]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    name: Lint
+    steps:
+      - name: Check out source repository
+        uses: actions/checkout@v3
+      - name: Set up Python environment
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+      - name: Install clang-format and reuse
+        run: python -m pip install clang-format==18.1.1 reuse
+      - name: Lint with clang-format
+        id: clang-format
+        continue-on-error: true
+        run: clang-format --dry-run -Werror --style=file src/**.cpp
+      - name: Lint with reuse
+        id: reuse
+        continue-on-error: true
+        run: reuse lint
+      - name: Check status of clang-format
+        if: steps.clang-format.outcome == 'failure'
+        run: exit 1
+      - name: Check status of reuse
+        if: steps.reuse.outcome == 'failure'
+        run: exit 1
