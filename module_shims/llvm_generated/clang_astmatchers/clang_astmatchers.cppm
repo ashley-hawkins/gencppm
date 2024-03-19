@@ -378,6 +378,4 @@ using ::clang::ast_matchers::gtestExpectCall;
 using ::clang::ast_matchers::gtestOnCall;
 } // namespace ast_matchers
 } // namespace clang
-using ::Getter;
-using ::MatcherImpl;
 }

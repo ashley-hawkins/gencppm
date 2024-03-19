@@ -64,6 +64,7 @@ using ::clang::TypeLoc;
 using ::clang::NestedNameSpecifier;
 using ::clang::NestedNameSpecifierLoc;
 using ::clang::NestedNameSpecifierLocBuilder;
+using ::clang::operator<<;
 using ::clang::DependentTemplateName;
 using ::clang::NamedDecl;
 using ::clang::OverloadedOperatorKind;
@@ -184,6 +185,8 @@ using ::clang::TypeIsArrayType;
 using ::clang::FixedPointValueToString;
 using ::clang::CanProxy;
 using ::clang::CanProxyAdaptor;
+using ::clang::operator==;
+using ::clang::operator!=;
 using ::clang::CanProxyBase;
 using ::clang::CanTypeIterator;
 namespace comments {
@@ -249,6 +252,10 @@ using ::clang::detail::IgnoreExprNodesImpl;
 using ::clang::detail::has_same_member_pointer_type;
 using ::clang::detail::isSameMethod;
 } // namespace detail
+using ::clang::operator<;
+using ::clang::operator>;
+using ::clang::operator<=;
+using ::clang::operator>=;
 using ::clang::DeclarationNameLoc;
 using ::clang::DeclarationNameInfo;
 using ::clang::ASTMutationListener;
@@ -500,6 +507,7 @@ using ::clang::ASTTemplateKWAndArgsInfo;
 using ::clang::CXXMemberCallExpr;
 using ::clang::CXXOperatorCallExpr;
 using ::clang::CastExpr;
+using ::clang::CXXCastPath;
 using ::clang::SubobjectAdjustment;
 using ::clang::ConstantExprKind;
 using ::clang::ConstantExpr;
@@ -1458,6 +1466,7 @@ using ::clang::VTableComponent;
 using ::clang::VTableLayout;
 using ::clang::ItaniumVTableContext;
 using ::clang::VPtrInfo;
+using ::clang::VPtrInfoVector;
 using ::clang::VirtualBaseInfo;
 using ::clang::MicrosoftVTableContext;
 } // namespace clang
@@ -1478,4 +1487,9 @@ using ::llvm::raw_ostream;
 using ::llvm::SmallVectorImpl;
 using ::llvm::GraphTraits;
 } // namespace llvm
+using ::operator new;
+using ::operator new[];
+using ::operator delete;
+using ::operator delete[];
+using ::operator*;
 }

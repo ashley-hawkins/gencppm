@@ -120,4 +120,6 @@ using ::llvm::MemoryBufferRef;
 using ::llvm::SmallString;
 using ::llvm::MemoryBuffer;
 } // namespace llvm
+using ::operator new;
+using ::operator delete;
 }

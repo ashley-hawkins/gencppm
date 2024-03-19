@@ -26,6 +26,7 @@ using ::clang::RISCV::PolicyScheme;
 using ::clang::RISCV::RVVIntrinsic;
 using ::clang::RISCV::RVVRequire;
 using ::clang::RISCV::RVVIntrinsicRecord;
+using ::clang::RISCV::operator<<;
 } // namespace RISCV
 } // namespace clang
 }

@@ -43,6 +43,7 @@ using ::clang::SourceLocation;
 namespace diag {
 using ::clang::diag::Group;
 using ::clang::diag::CustomDiagInfo;
+using ::clang::diag::kind;
 using ::clang::diag::Severity;
 using ::clang::diag::Flavor;
 } // namespace diag
@@ -50,10 +51,20 @@ using ::clang::DiagnosticMapping;
 using ::clang::DiagnosticIDs;
 using ::clang::OverloadsShown;
 using ::clang::DiagnosticLevelMask;
+using ::clang::operator~;
+using ::clang::operator|;
+using ::clang::operator&;
+using ::clang::operator<<;
 using ::clang::DiagnosticOptions;
 using ::clang::TextDiagnosticFormat;
 using ::clang::SourceManager;
 using ::clang::FileID;
+using ::clang::operator==;
+using ::clang::operator!=;
+using ::clang::operator<;
+using ::clang::operator>;
+using ::clang::operator<=;
+using ::clang::operator>=;
 using ::clang::SourceRange;
 using ::clang::CharSourceRange;
 using ::clang::PresumedLoc;
@@ -394,6 +405,7 @@ using ::clang::ParsedAttr;
 using ::clang::Sema;
 using ::clang::Stmt;
 using ::clang::ParsedAttrInfo;
+using ::clang::ParsedAttrInfoRegistry;
 using ::clang::getAttributePluginInstances;
 namespace markup {
 using ::clang::markup::FIDMap;
