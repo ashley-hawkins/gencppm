@@ -154,7 +154,7 @@ private:
 
 		auto declName = Declaration->getDeclName();
 
-		if (!declName.isIdentifier())
+		if (!declName.isIdentifier() && declName.getCXXOverloadedOperator() == OO_None)
 		{
 			return false;
 		}
