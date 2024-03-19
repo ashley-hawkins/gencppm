@@ -138,7 +138,7 @@ private:
 
 	bool validateDeclaration(NamedDecl* Declaration)
 	{
-		if (!(isa<UsingDecl>(Declaration) || isa<TypeAliasDecl>(Declaration)) && !Declaration->isExternallyVisible())
+		if (!isany<UsingDecl, TypeAliasDecl>(Declaration) && !Declaration->isExternallyVisible())
 		{
 			// TODO: Handle variables that are not externally visible but would've been accessible if this were a header file
 			return false;
