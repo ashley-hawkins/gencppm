@@ -5,19 +5,27 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+module;
+#include "includefirst.hpp"
+
+#include <string>
+#include <filesystem>
+#include <variant>
+
+#include <llvm/ADT/StringRef.h>
+#include <llvm/Support/raw_ostream.h>
+
+#include <clang/AST/ASTConsumer.h>
+#include <clang/AST/ASTContext.h>
+#include <clang/Basic/SourceLocation.h>
+#include <clang/Basic/SourceManager.h>
+#include <clang/Basic/FileEntry.h>
+#include <clang/Basic/Module.h>
+#include <clang/Lex/PPCallbacks.h>
+#include <clang/Lex/Token.h>
 export module gencppm:ast_consumer;
 import :namespaces;
 import :ast_visitor;
-
-import std;
-
-import LLVM.Support;
-
-import clang.AST;
-import clang.Basic;
-import clang.Frontend;
-import clang.Tooling;
-import clang.Lex;
 
 using namespace clang;
 

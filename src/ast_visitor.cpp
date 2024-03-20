@@ -5,17 +5,31 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+module;
+#include "includefirst.hpp"
+
+#include <algorithm>
+#include <filesystem>
+#include <ranges>
+#include <string>
+#include <string_view>
+#include <vector>
+
+#include <llvm/Support/Casting.h>
+#include <llvm/Support/raw_ostream.h>
+
+#include <clang/AST/ASTContext.h>
+#include <clang/AST/Decl.h>
+#include <clang/AST/DeclBase.h>
+#include <clang/AST/DeclCXX.h>
+#include <clang/AST/DeclTemplate.h>
+#include <clang/AST/RecursiveASTVisitor.h>
+#include <clang/Basic/SourceManager.h>
+#include <clang/Basic/LLVM.h>
+
 export module gencppm:ast_visitor;
 import :namespaces;
 import :any_of;
-
-import std;
-
-import LLVM.Support;
-
-import clang.Basic;
-import clang.AST;
-import clang.Frontend;
 
 using namespace clang;
 

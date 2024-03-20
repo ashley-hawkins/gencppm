@@ -5,9 +5,18 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-export module gencppm:namespaces;
+module;
+#include "includefirst.hpp"
 
-import std;
+#include <algorithm>
+#include <filesystem>
+#include <ranges>
+#include <string>
+#include <string_view>
+#include <unordered_map>
+#include <variant>
+#include <vector>
+export module gencppm:namespaces;
 
 export namespace gencppm
 {

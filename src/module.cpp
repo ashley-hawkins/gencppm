@@ -5,18 +5,26 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+module;
+#include "includefirst.hpp"
+
+#include <llvm/Support/Casting.h>
+#include <llvm/Support/raw_ostream.h>
+#include <llvm/Support/CommandLine.h>
+#include <llvm/ADT/StringRef.h>
+
+#include <clang/Basic/LLVM.h>
+#include <clang/AST/ASTConsumer.h>
+#include <clang/AST/ASTContext.h>
+#include <clang/Frontend/CompilerInstance.h>
+#include <clang/Frontend/FrontendAction.h>
+#include <clang/Tooling/Tooling.h>
+#include <clang/Tooling/CommonOptionsParser.h>
+#include <clang/Lex/Preprocessor.h>
 export module gencppm;
 import :namespaces;
 import :ast_visitor;
 import :ast_consumer;
-
-import std;
-
-import LLVM.Support;
-
-import clang.Basic;
-import clang.Tooling;
-import clang.Frontend;
 
 export namespace gencppm
 {

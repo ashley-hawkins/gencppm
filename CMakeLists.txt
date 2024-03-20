@@ -45,17 +45,10 @@ set(MODULE_SOURCES
 )
 
 add_executable(${PROJECT_NAME} ${SOURCE} src/main.cpp)
-add_subdirectory(module_shims)
-
-set(_std_modules)
-# std is implied on MSVC, for non-MSVC we need a workaround
-if (NOT MSVC)
-  list(APPEND _std_modules gencppm_std)
-endif()
 
 add_library(${PROJECT_NAME}-module)
 target_sources(${PROJECT_NAME}-module PUBLIC FILE_SET CXX_MODULES FILES ${MODULE_SOURCES})
-target_link_libraries(${PROJECT_NAME}-module PUBLIC ${_std_modules} clang::ast clang::tooling clang::basic clang::frontend clang::lex llvm::support Microsoft.GSL::GSL)
+target_link_libraries(${PROJECT_NAME}-module PUBLIC clangTooling Microsoft.GSL::GSL)
 target_compile_definitions(${PROJECT_NAME}-module PUBLIC CLANG_DIR="${CLANG_INSTALL_PREFIX}/lib/clang/${LLVM_VERSION_MAJOR}")
 llvm_update_compile_flags(${PROJECT_NAME}-module)
 

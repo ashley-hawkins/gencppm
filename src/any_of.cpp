@@ -4,12 +4,14 @@
  *
  * SPDX-License-Identifier: AGPL-3.0-only
  */
+module;
+#include "includefirst.hpp"
 
+#include <type_traits>
+#include <utility>
+
+#include <llvm/Support/Casting.h>
 export module gencppm:any_of;
-
-import std;
-
-import LLVM.Support;
 
 export namespace gencppm
 {
