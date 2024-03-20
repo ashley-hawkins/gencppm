@@ -109,9 +109,15 @@ int main(int argc, char const** argv)
 		return 1;
 	}
 
-	std::vector whitelist{NamespaceWhitelist.begin(), NamespaceWhitelist.end()};
 	ClangTool Tool(ExpectedParser->getCompilations(),
 	               ExpectedParser->getSourcePathList());
+	Tool.appendArgumentsAdjuster([](CommandLineArguments args, StringRef filename) {
+		args.push_back("-Xclang");
+		args.push_back("-internal-isystem");
+		args.push_back("-Xclang");
+		args.push_back(CLANG_DIR "/include");
+		return args;
+	});
 
 	return Tool.run(myFrontendActionFactory(Configuration{std::move(HeaderWhitelist), std::move(NamespaceWhitelist), std::move(NamespaceBlacklist), std::move(ModuleName), std::move(IncludeName)}).get());
 }

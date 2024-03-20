@@ -13,13 +13,19 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 include(FetchContent)
 include(CheckIPOSupported)
 
-find_package(LLVM 17 REQUIRED CONFIG)
+find_package(LLVM 17 REQUIRED CONFIG PATHS /opt/llvm-17.0.6/lib/cmake NO_DEFAULT_PATH)
+message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION} at ${LLVM_DIR}")
 include(AddLLVM)
-find_package(Clang 17 REQUIRED CONFIG)
+find_package(Clang ${LLVM_PACKAGE_VERSION} REQUIRED CONFIG PATHS /opt/llvm-17.0.6/lib/cmake NO_DEFAULT_PATH)
+message(STATUS "Found Clang ${LLVM_PACKAGE_VERSION} at ${CLANG_INSTALL_PREFIX}")
 add_compile_definitions(${LLVM_DEFINITIONS} ${CLANG_DEFINITIONS})
 add_link_options(${LLVM_LDFLAGS} ${CLANG_LDFLAGS})
 add_compile_options(${LLVM_CXXFLAGS} ${CLANG_CXXFLAGS})
 include_directories(${LLVM_INCLUDE_DIRS} ${CLANG_INCLUDE_DIRS})
+
+# get major version from LLVM_PACKAGE_VERSION
+string(REGEX MATCH "[0-9]+" LLVM_VERSION_MAJOR ${LLVM_PACKAGE_VERSION})
+message(STATUS "LLVM version major: ${LLVM_VERSION_MAJOR}")
 
 message(STATUS "Fetching GSL")
 FetchContent_Declare(GSL
@@ -50,6 +56,7 @@ endif()
 add_library(${PROJECT_NAME}-module)
 target_sources(${PROJECT_NAME}-module PUBLIC FILE_SET CXX_MODULES FILES ${MODULE_SOURCES})
 target_link_libraries(${PROJECT_NAME}-module PUBLIC ${_std_modules} clang::ast clang::tooling clang::basic clang::frontend clang::lex llvm::support Microsoft.GSL::GSL)
+target_compile_definitions(${PROJECT_NAME}-module PUBLIC CLANG_DIR="${CLANG_INSTALL_PREFIX}/lib/clang/${LLVM_VERSION_MAJOR}")
 llvm_update_compile_flags(${PROJECT_NAME}-module)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}-module)
