@@ -75,3 +75,5 @@ add_custom_target(${PROJECT_NAME}-windows
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
+
+include(${PROJECT_SOURCE_DIR}/cmake/gencppm.cmake)
