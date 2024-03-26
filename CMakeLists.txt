@@ -13,19 +13,37 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 include(FetchContent)
 include(CheckIPOSupported)
 
-find_package(LLVM 17 REQUIRED CONFIG)
-message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION} at ${LLVM_DIR}")
+if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+  message(WARNING "Please be aware that only compiling with Clang is supported. If you wish to proceed without using Clang as the compiler, please set gencppm_CLANG_VERSION_MAJOR_MINOR manually to a version of libclang (e.g. 18.1) that the tool will be built with, but be aware that if you are building the software with a compiler different to the version of libclang that gencppm was compiled against, the generated glue may be incompatible, as the preprocessor will have been run as if by Clang rather than by the compiler you would be using.")
+else()
+  if(NOT DEFINED gencppm_CLANG_VERSION_MAJOR_MINOR)
+    string(REGEX MATCH "^[0-9]+\.[0-9]+" gencppm_CLANG_VERSION_MAJOR_MINOR ${CMAKE_CXX_COMPILER_VERSION})
+  endif()
+  if (NOT DEFINED LLVM_ROOT OR NOT DEFINED CLANG_ROOT)
+    # Get the path to the compiler
+    get_filename_component(CLANG_EXECUTABLE_DIR ${CMAKE_CXX_COMPILER} DIRECTORY)
+    message(STATUS "Found Clang executable directory as ${CLANG_EXECUTABLE_DIR}, using this to get the base directory of the LLVM installation.")
+    # Use that to get the path to the root (../)
+    get_filename_component(CLANG_INSTALL_PREFIX ${CLANG_EXECUTABLE_DIR} DIRECTORY)
+
+    set(LLVM_ROOT ${CLANG_INSTALL_PREFIX})
+    set(CLANG_ROOT ${CLANG_INSTALL_PREFIX})
+  endif()
+endif()
+
+find_package(LLVM ${gencppm_CLANG_VERSION_MAJOR_MINOR} REQUIRED CONFIG)
+message(STATUS "Found LLVM ${LLVM_VERSION} at ${LLVM_DIR}")
 include(AddLLVM)
-find_package(Clang ${LLVM_PACKAGE_VERSION} REQUIRED CONFIG)
-message(STATUS "Found Clang ${LLVM_PACKAGE_VERSION} at ${CLANG_INSTALL_PREFIX}")
+find_package(Clang ${gencppm_CLANG_VERSION_MAJOR_MINOR} REQUIRED CONFIG)
+message(STATUS "Found Clang ${Clang_VERSION} at ${CLANG_INSTALL_PREFIX}")
 add_compile_definitions(${LLVM_DEFINITIONS} ${CLANG_DEFINITIONS})
 add_link_options(${LLVM_LDFLAGS} ${CLANG_LDFLAGS})
 add_compile_options(${LLVM_CXXFLAGS} ${CLANG_CXXFLAGS})
 include_directories(${LLVM_INCLUDE_DIRS} ${CLANG_INCLUDE_DIRS})
 
-# get major version from LLVM_PACKAGE_VERSION
-string(REGEX MATCH "[0-9]+" LLVM_VERSION_MAJOR ${LLVM_PACKAGE_VERSION})
-message(STATUS "LLVM version major: ${LLVM_VERSION_MAJOR}")
+# get major version from LLVM_VERSION
+string(REGEX MATCH "[0-9]+" LLVM_VERSION_MAJOR ${LLVM_VERSION})
+message(STATUS "LLVM major version: ${LLVM_VERSION_MAJOR}")
 
 message(STATUS "Fetching GSL")
 FetchContent_Declare(GSL
