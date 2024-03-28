@@ -221,9 +221,9 @@ private:
 		{
 			return false;
 		}
-		auto sourceLocation = Declaration->getLocation();
 
-		auto file = Context->getSourceManager().getFileEntryRefForID(Context->getSourceManager().getFileID(sourceLocation));
+		auto presumedLocation = Context->getSourceManager().getPresumedLoc(Declaration->getLocation());
+		auto file = Context->getSourceManager().getFileEntryRefForID(presumedLocation.getFileID());
 		if (!file)
 		{
 			return false;
