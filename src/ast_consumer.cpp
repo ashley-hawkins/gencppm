@@ -8,8 +8,8 @@
 module;
 #include "includefirst.hpp"
 
-#include <string>
 #include <filesystem>
+#include <string>
 #include <variant>
 
 #include <llvm/ADT/StringRef.h>
@@ -17,10 +17,10 @@ module;
 
 #include <clang/AST/ASTConsumer.h>
 #include <clang/AST/ASTContext.h>
-#include <clang/Basic/SourceLocation.h>
-#include <clang/Basic/SourceManager.h>
 #include <clang/Basic/FileEntry.h>
 #include <clang/Basic/Module.h>
+#include <clang/Basic/SourceLocation.h>
+#include <clang/Basic/SourceManager.h>
 #include <clang/Lex/PPCallbacks.h>
 #include <clang/Lex/Token.h>
 export module gencppm:ast_consumer;
@@ -68,9 +68,20 @@ public:
 	{
 	}
 
-	void InclusionDirective(SourceLocation HashLoc, Token const& IncludeTok, StringRef FileName, bool IsAngled,
-	                        CharSourceRange FilenameRange, OptionalFileEntryRef const File, StringRef SearchPath,
-	                        StringRef RelativePath, Module const* Imported, SrcMgr::CharacteristicKind FileType) override
+	void InclusionDirective(
+	  SourceLocation HashLoc,
+	  Token const& IncludeTok,
+	  StringRef FileName,
+	  bool IsAngled,
+	  CharSourceRange FilenameRange,
+	  OptionalFileEntryRef File,
+	  StringRef SearchPath,
+	  StringRef RelativePath,
+	  Module const* SuggestedModule,
+#if LLVM_VERSION_MAJOR >= 19
+	  bool ModuleImported,
+#endif
+	  SrcMgr::CharacteristicKind FileType) override
 	{
 		if (!File)
 		{

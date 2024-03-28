@@ -24,8 +24,8 @@ module;
 #include <clang/AST/DeclCXX.h>
 #include <clang/AST/DeclTemplate.h>
 #include <clang/AST/RecursiveASTVisitor.h>
-#include <clang/Basic/SourceManager.h>
 #include <clang/Basic/LLVM.h>
+#include <clang/Basic/SourceManager.h>
 
 export module gencppm:ast_visitor;
 import :namespaces;

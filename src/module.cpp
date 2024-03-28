@@ -8,19 +8,19 @@
 module;
 #include "includefirst.hpp"
 
-#include <llvm/Support/Casting.h>
-#include <llvm/Support/raw_ostream.h>
-#include <llvm/Support/CommandLine.h>
 #include <llvm/ADT/StringRef.h>
+#include <llvm/Support/Casting.h>
+#include <llvm/Support/CommandLine.h>
+#include <llvm/Support/raw_ostream.h>
 
-#include <clang/Basic/LLVM.h>
 #include <clang/AST/ASTConsumer.h>
 #include <clang/AST/ASTContext.h>
+#include <clang/Basic/LLVM.h>
 #include <clang/Frontend/CompilerInstance.h>
 #include <clang/Frontend/FrontendAction.h>
-#include <clang/Tooling/Tooling.h>
-#include <clang/Tooling/CommonOptionsParser.h>
 #include <clang/Lex/Preprocessor.h>
+#include <clang/Tooling/CommonOptionsParser.h>
+#include <clang/Tooling/Tooling.h>
 export module gencppm;
 import :namespaces;
 import :ast_visitor;
@@ -130,3 +130,13 @@ int main(int argc, char const** argv)
 	return Tool.run(myFrontendActionFactory(Configuration{std::move(HeaderWhitelist), std::move(NamespaceWhitelist), std::move(NamespaceBlacklist), std::move(ModuleName), std::move(IncludeName)}).get());
 }
 } // namespace gencppm
+
+#if defined(__GLIBCXX__)
+// https://github.com/alibaba/async_simple/blob/d6f201192bb332fc9dabcfdf3fa29e85c83c7f45/third_party_module/stdmodules/string.cppm#L28C1-L42C7
+// Thank you, Chuanqi Xu, for finding the solution to this problem.
+extern "C++"
+{
+	template class std::allocator<char>;
+	template class std::allocator<wchar_t>;
+}
+#endif

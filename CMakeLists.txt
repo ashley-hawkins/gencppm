@@ -59,6 +59,7 @@ set(MODULE_SOURCES
   src/namespace.cpp
   src/ast_visitor.cpp
   src/ast_consumer.cpp
+  src/stringfix.cpp
   src/any_of.cpp
 )
 
