@@ -222,8 +222,35 @@ private:
 			return false;
 		}
 
-		auto presumedLocation = Context->getSourceManager().getPresumedLoc(Declaration->getLocation());
-		auto file = Context->getSourceManager().getFileEntryRefForID(presumedLocation.getFileID());
+		auto file = [location = Declaration->getLocation(), &sourceManager = Context->getSourceManager()] -> OptionalFileEntryRef {
+			if (!location.isValid())
+			{
+				return std::nullopt;
+			}
+
+			if (location.isMacroID())
+			{
+				auto presumedLocation = sourceManager.getPresumedLoc(location);
+				if (!presumedLocation.isValid())
+				{
+					return std::nullopt;
+				}
+				auto id = presumedLocation.getFileID();
+				if (!id.isValid())
+				{
+					return std::nullopt;
+				}
+				return sourceManager.getFileEntryRefForID(id);
+			}
+
+			auto id = sourceManager.getFileID(location);
+			if (!id.isValid())
+			{
+				return std::nullopt;
+			}
+			return sourceManager.getFileEntryRefForID(id);
+		}();
+
 		if (!file)
 		{
 			return false;
