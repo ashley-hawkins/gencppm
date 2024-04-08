@@ -7,8 +7,8 @@ set(GENCPPM_GENERATE_DIR ${CMAKE_CURRENT_LIST_DIR} CACHE INTERNAL "Path to gencp
 
 # Function to initialize a module shim target
 function(init_module_shim target_name module_name)
-    set(oneValueArgs MODULE_INCLUDE_NAME WHITELIST_HEADERS)
-    set(multiValueArgs HEADERS WHITELIST_NAMESPACES)
+    set(oneValueArgs MODULE_INCLUDE_NAME)
+    set(multiValueArgs HEADERS WHITELIST_NAMESPACES WHITELIST_HEADERS)
     cmake_parse_arguments(PARSE_ARGV 2 ARG "" "${oneValueArgs}" "${multiValueArgs}")
 
     if (NOT DEFINED ARG_MODULE_INCLUDE_NAME)
