@@ -111,18 +111,20 @@ public:
 			}
 		}
 
+		llvm::errs() << "InclusionDirective: " << (IsAngled ? "<" : "\"") << FileName << (IsAngled ? ">" : "\"");
+		if (!IsAngled)
+		{
+			llvm::errs() << " => <" << NormalisedFileName << ">";
+		}
+		llvm::errs() << " => " << filePath;
 		if (configuration.HeaderWhitelist.empty() || std::ranges::any_of(configuration.HeaderWhitelist, [&NormalisedFileName](auto const& header) {
 			    return NormalisedFileName.starts_with(header);
 		    }))
 		{
-			llvm::errs() << "InclusionDirective: " << (IsAngled ? "<" : "\"") << FileName << (IsAngled ? ">" : "\"");
-			if (!IsAngled)
-			{
-				llvm::errs() << " => <" << NormalisedFileName << ">";
-			}
-			llvm::errs() << " => " << filePath << '\n';
 			filePathToIncludeNameMap[filePath] = NormalisedFileName;
+			llvm::errs() << " PASS";
 		}
+		llvm::errs() << '\n';
 	}
 
 private:
