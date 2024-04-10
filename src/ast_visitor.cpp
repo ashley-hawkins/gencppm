@@ -148,11 +148,10 @@ private:
 		return "";
 	}
 
-	std::vector<NamespaceInfo> getNamespaceAncestryInfo(Decl* Declaration)
+	std::vector<NamespaceInfo> getNamespaceAncestryInfo(DeclContext* context)
 	{
 		std::vector<NamespaceInfo> namespaceInfo;
 
-		auto context = Declaration->getDeclContext();
 		NamespaceDecl* namespaceDecl;
 		while ((namespaceDecl = dyn_cast<NamespaceDecl>(context)))
 		{
@@ -161,6 +160,11 @@ private:
 		}
 
 		return namespaceInfo;
+	}
+
+	std::vector<NamespaceInfo> getNamespaceAncestryInfo(Decl* Declaration)
+	{
+		return getNamespaceAncestryInfo(Declaration->getDeclContext());
 	}
 
 	static bool isUnreservedName(std::string_view name, bool inGlobalNamespace)
@@ -190,7 +194,9 @@ private:
 
 	bool validateDeclaration(NamedDecl* Declaration)
 	{
+		constexpr auto debug_on_name = "boost_asio_signal_handler";
 		constexpr bool allowReservedNames = true;
+
 		if (!isany<UsingDecl, TypeAliasDecl, TypedefDecl, NamespaceAliasDecl>(Declaration) && !Declaration->isExternallyVisible())
 		{
 			// TODO: Handle variables that are not externally visible but would've been accessible if this were a header file
@@ -198,27 +204,52 @@ private:
 		}
 		auto lexContext = Declaration->getLexicalDeclContext();
 		auto context = Declaration->getDeclContext();
+		if (context->isExternCContext())
+		{
+			context = context->getParent();
+		}
+		if (lexContext->isExternCContext())
+		{
+			lexContext = lexContext->getParent();
+		}
+
+		auto log = [this, &Declaration, context, lexContext](std::string_view message) {
+			if (Declaration->getDeclName().getAsString() == debug_on_name)
+			{
+				llvm::errs() << "Invalid declaration: " << message << '\n';
+				llvm::errs() << "Name: " << Declaration->getDeclName().getAsString() << '\n';
+				llvm::errs() << "Location: " << Declaration->getLocation().printToString(Context->getSourceManager()) << '\n';
+				llvm::errs() << "Decl: " << Declaration->getDeclKindName() << '\n';
+				llvm::errs() << "In Namespace: " << getNamespaceName(Declaration) << '\n';
+				llvm::errs() << "Context: " << context->getDeclKindName() << '\n';
+				llvm::errs() << "LexContext: " << lexContext->getDeclKindName() << '\n';
+			}
+		};
 
 		auto declName = Declaration->getDeclName();
 
 		if (!declName.isIdentifier() && declName.getCXXOverloadedOperator() == OO_None)
 		{
+			log("Invalid declName");
 			return false;
 		}
 
 		auto declNameStr = declName.getAsString();
 		if (declNameStr.empty())
 		{
+			log("Empty declName");
 			return false;
 		}
 
 		if (!((lexContext->isNamespace() || lexContext->isTranslationUnit()) && (context->isNamespace() || context->isTranslationUnit())))
 		{
+			log("Invalid context");
 			return false;
 		}
 
 		if ((!context->isNamespace() && !context->isTranslationUnit()))
 		{
+			log("Invalid context");
 			return false;
 		}
 
@@ -253,11 +284,13 @@ private:
 
 		if (!file)
 		{
+			log("Invalid file");
 			return false;
 		}
 		auto filePath = std::filesystem::path{std::string{file->getName()}}.lexically_normal();
 		if (!filePathToIncludeNameMap.contains(filePath))
 		{
+			log("File path is not one of the expected ones");
 			return false;
 		}
 
@@ -266,15 +299,17 @@ private:
 		{
 			if (!allowReservedNames)
 			{
-				std::vector<NamespaceInfo> namespaceInfo = getNamespaceAncestryInfo(Declaration);
+				std::vector<NamespaceInfo> namespaceInfo = getNamespaceAncestryInfo(context);
 				if (!namespaceInfo.empty() && !isUnreservedName(namespaceInfo.back().name, true))
 				{
+					log("Invalid namespace name");
 					return false;
 				}
 				for (auto const& ns : namespaceInfo | std::views::reverse | std::views::drop(1))
 				{
 					if (!isUnreservedName(ns.name, false))
 					{
+						log("Reserved namespace name");
 						return false;
 					}
 				}
@@ -287,18 +322,21 @@ private:
 			// If the whitelist is not empty, and the namespace is not in the whitelist, this is not valid
 			if (!configuration.NamespaceWhitelist.empty() && std::find_if(configuration.NamespaceWhitelist.begin(), configuration.NamespaceWhitelist.end(), namespace_matches) == configuration.NamespaceWhitelist.end())
 			{
+				log("Namespace not in whitelist");
 				return false;
 			}
 
 			// If the blacklist is not empty, and the namespace is in the blacklist, this is not valid
 			if (std::find_if(configuration.NamespaceBlacklist.begin(), configuration.NamespaceBlacklist.end(), namespace_matches) != configuration.NamespaceBlacklist.end())
 			{
+				log("Namespace in blacklist");
 				return false;
 			}
 		}
 
 		if (!allowReservedNames && !isUnreservedName(declNameStr, context->isTranslationUnit()))
 		{
+			log("Reserved name");
 			return false;
 		}
 
@@ -322,9 +360,16 @@ private:
 			return true;
 		}
 
+		auto lexContext = Declaration->getLexicalDeclContext();
+		auto context = Declaration->getDeclContext();
+		if (context->isExternCContext())
+		{
+			context = context->getParent();
+		}
+
 		// std::string declName = Declaration->getDeclName().getAsString();
 
-		globalNamespace.ensureNamespace(getNamespaceAncestryInfo(Declaration)).addUsingDeclToNamespace(declName);
+		globalNamespace.ensureNamespace(getNamespaceAncestryInfo(context)).addUsingDeclToNamespace(declName);
 		return true;
 	}
 };
