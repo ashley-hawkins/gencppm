@@ -7,6 +7,21 @@ set(GENCPPM_GENERATE_DIR ${CMAKE_CURRENT_LIST_DIR} CACHE INTERNAL "Path to gencp
 
 # Function to initialize a module shim target
 function(init_module_shim target_name module_name)
+    set(cache_var_name "GENCPPM_TARGET_${target_name}_PROPERTY_PREV_INVOCATION")
+
+    set(ARGV_ ${ARGV})
+    list(REMOVE_AT ARGV_ 0)
+
+    set(ARGV_PREV ${${cache_var_name}})
+    set(${cache_var_name} ${ARGV_} CACHE INTERNAL "" FORCE)
+
+    if(NOT ARGV_ STREQUAL ARGV_PREV)
+        message(STATUS "ARGV: ${ARGV_} ARGV_PREV: ${ARGV_PREV}")
+        set(should_regenerate TRUE)
+    else()
+        set(should_regenerate FALSE)
+    endif()
+
     set(oneValueArgs MODULE_INCLUDE_NAME)
     set(multiValueArgs HEADERS WHITELIST_NAMESPACES WHITELIST_HEADERS)
     cmake_parse_arguments(PARSE_ARGV 2 ARG "" "${oneValueArgs}" "${multiValueArgs}")
@@ -20,11 +35,18 @@ function(init_module_shim target_name module_name)
     file(MAKE_DIRECTORY ${generated_dir})
 
     # Generate the header file that includes all headers needed for the module
+    if (should_regenerate)
+        file(REMOVE_RECURSE ${generated_dir})
+    endif()
+    
     set(header_file "${generated_dir}/${ARG_MODULE_INCLUDE_NAME}")
-    file(WRITE ${header_file} "// Auto-generated module shim file\n")
-    foreach(header ${ARG_HEADERS})
-        file(APPEND ${header_file} "#include <${header}>\n")
-    endforeach()
+
+    if(NOT EXISTS ${header_file})
+        file(WRITE ${header_file} "// Auto-generated module shim file\n")
+        foreach(header ${ARG_HEADERS})
+            file(APPEND ${header_file} "#include <${header}>\n")
+        endforeach()
+    endif()
 
     set(output_cppm_file "${generated_dir}/${module_name}.cppm")
 
