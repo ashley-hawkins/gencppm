@@ -192,16 +192,35 @@ private:
 		return true;
 	}
 
+	bool resolveVisibility(NamedDecl* Declaration)
+	{
+		if (Declaration->isExternallyVisible())
+		{
+			return true;
+		}
+		if (isany<TypeAliasDecl, TypedefDecl, NamespaceAliasDecl>(Declaration))
+		{
+			return true;
+		}
+		if (auto* usingDecl = dyn_cast<UsingDecl>(Declaration); usingDecl)
+		{
+			for (auto decl : usingDecl->shadows())
+			{
+				if (!resolveVisibility(decl->getTargetDecl()))
+				{
+					return false;
+				}
+			}
+			return true;
+		}
+		return false;
+	}
+
 	bool validateDeclaration(NamedDecl* Declaration)
 	{
-		constexpr auto debug_on_name = "boost_asio_signal_handler";
+		constexpr auto debug_on_name = "uint8_t";
 		constexpr bool allowReservedNames = true;
 
-		if (!isany<UsingDecl, TypeAliasDecl, TypedefDecl, NamespaceAliasDecl>(Declaration) && !Declaration->isExternallyVisible())
-		{
-			// TODO: Handle variables that are not externally visible but would've been accessible if this were a header file
-			return false;
-		}
 		auto lexContext = Declaration->getLexicalDeclContext();
 		auto context = Declaration->getDeclContext();
 		if (context->isExternCContext())
@@ -211,6 +230,11 @@ private:
 		if (lexContext->isExternCContext())
 		{
 			lexContext = lexContext->getParent();
+		}
+
+		if (!resolveVisibility(Declaration))
+		{
+			return false;
 		}
 
 		auto log = [this, &Declaration, context, lexContext](std::string_view message) {
@@ -339,6 +363,8 @@ private:
 			log("Reserved name");
 			return false;
 		}
+
+		log("Valid declaration");
 
 		return true;
 	}
