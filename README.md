@@ -11,6 +11,11 @@ A tool for generating cppm files to export symbols from a legacy header.
 
 A tool to generate a cppm (C++20 Module) file that exports symbols declared in traditional headers. Extremely early in development and not really ready to be used in any form other than testing for bug reports.
 
+# Known limitations
+
+- Does not support anything defined as a macro.
+- Does not support static variables in headers, since it's not possible to export those. If you're in a position where you can patch the library, this can be worked around by changing it to `inline` instead.
+
 # License information
 
 The project adheres to the [REUSE spceification](https://reuse.software/spec/) for license info.
