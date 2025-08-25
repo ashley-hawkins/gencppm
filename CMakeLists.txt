@@ -45,15 +45,6 @@ include_directories(${LLVM_INCLUDE_DIRS} ${CLANG_INCLUDE_DIRS})
 string(REGEX MATCH "[0-9]+" LLVM_VERSION_MAJOR ${LLVM_VERSION})
 message(STATUS "LLVM major version: ${LLVM_VERSION_MAJOR}")
 
-message(STATUS "Fetching GSL")
-FetchContent_Declare(GSL
-    GIT_REPOSITORY "https://github.com/microsoft/GSL"
-    GIT_TAG b39e7e4b0987859f5b19ff7686b149c916588658
-    GIT_SHALLOW ON
-    GIT_PROGRESS ON
-)
-FetchContent_MakeAvailable(GSL)
-
 set(MODULE_SOURCES
   src/module.cpp
   src/namespace.cpp
@@ -67,7 +58,7 @@ add_executable(${PROJECT_NAME} ${SOURCE} src/main.cpp)
 
 add_library(${PROJECT_NAME}-module)
 target_sources(${PROJECT_NAME}-module PUBLIC FILE_SET CXX_MODULES FILES ${MODULE_SOURCES})
-target_link_libraries(${PROJECT_NAME}-module PUBLIC clangTooling Microsoft.GSL::GSL)
+target_link_libraries(${PROJECT_NAME}-module PUBLIC clangTooling)
 target_compile_definitions(${PROJECT_NAME}-module PUBLIC CLANG_DIR="${CLANG_INSTALL_PREFIX}/lib/clang/${LLVM_VERSION_MAJOR}")
 llvm_update_compile_flags(${PROJECT_NAME}-module)
 
