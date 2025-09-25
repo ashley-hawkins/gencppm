@@ -31,7 +31,7 @@ function(init_module_shim target_name module_name)
     endif()
 
     # Create a directory for generated files if not exists
-    set(generated_dir "${CMAKE_BINARY_DIR}/_shim_generated/${module_name}")
+    set(generated_dir "${CMAKE_CURRENT_BINARY_DIR}/_shim_generated/${module_name}")
     file(MAKE_DIRECTORY ${generated_dir})
 
     # Generate the header file that includes all headers needed for the module
@@ -95,7 +95,7 @@ function(init_module_shim target_name module_name)
         list(APPEND whitelist_namespaces "-w=${namespace}")
     endforeach()
 
-    set(full_command_line $<TARGET_FILE:gencppm> -p ${CMAKE_BINARY_DIR} -M=${module_name} -I=${ARG_MODULE_INCLUDE_NAME} ${header_args} ${whitelist_namespaces} ${extra_args} ${output_cppm_file})
+    set(full_command_line $<TARGET_FILE:gencppm> -p ${CMAKE_CURRENT_BINARY_DIR} -M=${module_name} -I=${ARG_MODULE_INCLUDE_NAME} ${header_args} ${whitelist_namespaces} ${extra_args} ${output_cppm_file})
     string(REPLACE ";" "\\;" escaped_full_command_line "${full_command_line}")
 
     # Update the custom command to include the extra arguments
