@@ -1,0 +1,51 @@
+# SPDX-FileCopyrightText: © 2024 Ashley Hawkins <awhawkins@proton.me>
+# SPDX-FileContributor: Ashley Hawkins <awhawkins@proton.me>
+#
+# SPDX-License-Identifier: CC0-1.0
+
+name: Build with LLVM versions
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        llvm-version: [19, 22]
+    name: Build with LLVM ${{ matrix.llvm-version }}
+    steps:
+      - name: Check out source repository
+        uses: actions/checkout@v3
+
+      - name: Update apt cache
+        run: sudo apt-get update
+
+      - name: Install build essentials
+        run: sudo apt-get install -y cmake ninja-build
+
+      - name: Add LLVM apt repository
+        run: |
+          wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+          echo "deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-${{ matrix.llvm-version }} main" | sudo tee /etc/apt/sources.list.d/llvm.list
+          sudo apt-get update
+
+      - name: Install LLVM and Clang ${{ matrix.llvm-version }}
+        run: sudo apt-get install -y clang-${{ matrix.llvm-version }} llvm-${{ matrix.llvm-version }}-dev libclang-${{ matrix.llvm-version }}-dev
+
+      - name: Create build directory
+        run: mkdir build
+
+      - name: Configure CMake
+        working-directory: build
+        run: |
+          cmake .. \
+            -G Ninja \
+            -DCMAKE_CXX_COMPILER=clang++-${{ matrix.llvm-version }} \
+            -DCMAKE_C_COMPILER=clang-${{ matrix.llvm-version }} \
+            -DLLVM_ROOT=/usr/lib/llvm-${{ matrix.llvm-version }} \
+            -DCLANG_ROOT=/usr/lib/llvm-${{ matrix.llvm-version }}
+
+      - name: Build
+        working-directory: build
+        run: ninja
