@@ -31,7 +31,7 @@ jobs:
           sudo apt-get update
 
       - name: Install LLVM and Clang ${{ matrix.llvm-version }}
-        run: sudo apt-get install -y clang-${{ matrix.llvm-version }} llvm-${{ matrix.llvm-version }}-dev libclang-${{ matrix.llvm-version }}-dev
+        run: sudo apt-get install -y clang-${{ matrix.llvm-version }} llvm-${{ matrix.llvm-version }}-dev libclang-${{ matrix.llvm-version }}-dev clang-tools-${{ matrix.llvm-version }}
 
       - name: Create build directory
         run: mkdir build
