@@ -132,7 +132,11 @@ private:
 		if (qualifiedAliasedName)
 		{
 			llvm::raw_string_ostream os(qualifiedAliasedNameStr);
+		#if LLVM_VERSION_MAJOR >= 22
+			qualifiedAliasedName.print(os, Declaration->getASTContext().getPrintingPolicy());
+		#else
 			qualifiedAliasedName->print(os, Declaration->getASTContext().getPrintingPolicy());
+		#endif
 		}
 		qualifiedAliasedNameStr += Declaration->getAliasedNamespace()->getDeclName().getAsString();
 		return qualifiedAliasedNameStr;
