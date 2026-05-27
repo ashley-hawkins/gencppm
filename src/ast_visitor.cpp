@@ -132,7 +132,7 @@ private:
 		if (qualifiedAliasedName)
 		{
 			llvm::raw_string_ostream os(qualifiedAliasedNameStr);
-			qualifiedAliasedName->print(os, Declaration->getASTContext().getPrintingPolicy());
+			qualifiedAliasedName.print(os, Declaration->getASTContext().getPrintingPolicy());
 		}
 		qualifiedAliasedNameStr += Declaration->getAliasedNamespace()->getDeclName().getAsString();
 		return qualifiedAliasedNameStr;
