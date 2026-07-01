@@ -6,7 +6,16 @@
 file(WRITE "${OUT_FILE}" "#include \"${HEADER_FILE}\"\n")
 
 message(STATUS "Running ${FULL_COMMAND_LINE}")
-execute_process(COMMAND ${FULL_COMMAND_LINE} OUTPUT_VARIABLE OUTPUT)
+execute_process(
+	COMMAND ${FULL_COMMAND_LINE}
+	OUTPUT_VARIABLE OUTPUT
+	ERROR_VARIABLE ERROR_OUTPUT
+	RESULT_VARIABLE RESULT
+)
+
+if(NOT RESULT EQUAL 0)
+	message(FATAL_ERROR "gencppm failed: ${ERROR_OUTPUT}")
+endif()
 
 message(STATUS "Output: ${OUTPUT}")
 
